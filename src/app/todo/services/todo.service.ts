@@ -1,51 +1,45 @@
-import { Injectable } from '@angular/core';
 import { Todo } from '../models/todo';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { environment } from '../../../../environment/environment';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoService {
+  private http = inject(HttpClient);
+
   private todoId = 1;
-  private todoList: Todo[] = [
-    {
-      id: this.todoId++,
-      title: 'serve the app',
-      completed: true,
-    },
-    {
-      id: this.todoId++,
-      title: 'familiarise yourself with the codebase',
-      completed: false,
-    },
-    {
-      id: this.todoId++,
-      title: 'start talking to the api',
-      completed: false,
-    },
-  ];
 
-  // TODO replace with a get request
-  todos: Promise<Todo[]> = Promise.resolve(this.todoList);
+  todos: Observable<Todo[]> = this.http.get<Todo[]>(`${environment.api}`);
 
-  async addTodo(title: string): Promise<Todo> {
-    // TODO: replace with a POST request
+  public getTodos(): Observable<Todo[]>
+  {
+    return this.http.get<Todo[]>(`${environment.api}`);
+  }
+
+  addTodo(title: string){
     const todo = {
       id: this.todoId++,
       title: title,
       completed: false,
     };
-    this.todoList.push(todo);
 
-    return todo;
+    return this.http.post(`${environment.api}`, todo);
   }
 
-  async updateTodo(updatedTodo: Todo): Promise<Todo> {
-    // TODO: replace with a PUT request
-    const foundTodo = this.todoList.find((todo) => todo.id === updatedTodo.id);
+  async updateTodo(updatedTodo: Todo) {
+    const foundTodo =  this.http.get<Todo[]>(`${environment.api}/${updatedTodo.id}`);
     if (!foundTodo) {
       throw new Error('todo not found');
     }
-    Object.assign(foundTodo, updatedTodo);
+
+    this.http
+    .put(`${environment.api}/${updatedTodo.id}`, updatedTodo)
+    .subscribe((response: any) => {
+      console.log('Server response:', response);
+    });
 
     return foundTodo;
   }
