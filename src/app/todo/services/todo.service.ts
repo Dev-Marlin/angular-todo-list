@@ -2,13 +2,21 @@ import { Todo } from '../models/todo';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../../environment/environment';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoService {
   private http = inject(HttpClient);
+
+  private toggle = new BehaviorSubject<boolean>(false);
+  currentToggle = this.toggle.asObservable();
+
+  changeToggle(value: boolean)
+  {
+    this.toggle.next(value);
+  }
 
   private todoId = 1;
 

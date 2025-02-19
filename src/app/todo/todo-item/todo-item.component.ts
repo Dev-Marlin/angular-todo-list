@@ -9,6 +9,7 @@ import { Todo } from '../models/todo';
 export class TodoItemComponent {
   @Input('todo') todo: Todo | null = null;
   @Output('update') update = new EventEmitter<Todo>();
+  @Input('td') td: boolean = false;//td: boolean = true;
 
   toggleCompleted() {
     if (!this.todo) {
@@ -18,5 +19,7 @@ export class TodoItemComponent {
       ...this.todo,
       completed: !this.todo.completed,
     });
+    //this.td  = this.todo ? this.todo.completed : false;
+    this.td = !this.td;
   }
 }
